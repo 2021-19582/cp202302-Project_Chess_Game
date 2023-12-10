@@ -226,14 +226,20 @@ public class ChessBoard {
             // (x, y) is where the click event occured
 //            System.out.println("clicked: "+x+","+y);
             if (end) return;
-            if (!amIPink){
+            if (!amIPink || (amIPink && (getIcon(x, y).color==PlayerColor.black && !turn) || (getIcon(x, y).color==PlayerColor.white && turn))){
 
                 if (getIcon(x, y).color == PlayerColor.none) return;
                 if (turn != (getIcon(x, y).color == PlayerColor.white)) return;// choose diff piece!
                 ArrayList<int[]> move, eat;
                 ArrayList<int[]>[] temp = moveOrEatSquare(getIcon(x, y), x, y);
                 move = temp[0];
-                eat = temp[1];
+
+                if (amIPink){
+                    ArrayList<int[]> moveSel = moveOrEatSquare(getIcon(selX, selY), selX, selY)[0];
+                    for (int[] s: moveSel){
+                        unmarkPosition(s[0], s[1]);
+                    }
+                }
                 for (int[] s: move){
                     markPosition(s[0], s[1]);
                 }
@@ -241,10 +247,10 @@ public class ChessBoard {
                 selY = y;
                 amIPink = true;
             }
-            else{ // i am pink!
+            else{
                 ArrayList<int[]> move, eat;
                 ArrayList<int[]>[] temp = moveOrEatSquare(getIcon(selX, selY), selX, selY);
-                move = temp[0];
+                move = temp[0]; // places where clicked icon can move
                 eat = temp[1];
                 for(int[] s: move){
 //                    System.out.println(s[0]+","+s[1]);
@@ -257,6 +263,7 @@ public class ChessBoard {
                         endOfTurn();
                     }
                 }
+
                 for (int[] s: move){
                     unmarkPosition(s[0], s[1]);
                 }
